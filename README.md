@@ -8,11 +8,35 @@ land in your dashboard or straight in your AI tool via MCP — no jargon, no
 deletion features, just the findings so you (or your AI agent) can decide
 what to clean up.
 
-This module creates a single, **read-only** IAM role in your account. It
-does not delete, modify, or create any resources other than that role and
-its policies.
+This module creates a single IAM role in your account, scoped almost
+entirely to read-only access — plus a handful of narrow, one-time write
+permissions solely to opt you into two free AWS recommendation services
+(Compute Optimizer, Cost Optimization Hub), which require opt-in before
+they'll return anything. Nothing this role can do touches, modifies, or
+deletes your actual infrastructure — see [What this creates](#what-this-creates)
+for the exact breakdown.
 
 ## Usage
+
+Get your `external_id` token from [junglecleaner.com](https://junglecleaner.com)
+— either the sign-up flow on the dashboard, or the `connect_aws` tool if
+you're connecting from an AI tool like Cursor or Claude Code via MCP.
+
+The fastest way to get connected — clone this repo and apply it directly, no
+file editing required:
+
+```sh
+git clone https://github.com/JungleCleaner/terraform-aws-jungle-cleaner.git
+cd terraform-aws-jungle-cleaner
+terraform init
+terraform apply -var="external_id=conn_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+```
+
+(Works the same way with [OpenTofu](https://opentofu.org) — swap `terraform`
+for `tofu`.)
+
+If you'd rather manage this as part of your existing Terraform-managed AWS
+account instead of a standalone `apply`, reference it as a module:
 
 ```hcl
 module "jungle_cleaner" {
@@ -21,17 +45,6 @@ module "jungle_cleaner" {
   external_id = "conn_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 }
 ```
-
-Get your `external_id` token from [junglecleaner.com](https://junglecleaner.com)
-— either the sign-up flow on the dashboard, or the `connect_aws` tool if
-you're connecting from an AI tool like Cursor or Claude Code via MCP.
-
-```sh
-terraform init
-terraform apply
-```
-
-(Works the same way with [OpenTofu](https://opentofu.org) — `tofu init && tofu apply`.)
 
 Once applied, this module makes a best-effort attempt to notify Jungle
 Cleaner automatically so your dashboard shows the account as connected
@@ -49,10 +62,18 @@ assuming it, so it's just as trustworthy either way.
   the role's ARN.
 - The AWS-managed `ReadOnlyAccess` policy, plus a small number of extra
   read-only actions (Cost Explorer, Compute Optimizer, Cost Optimization
-  Hub, WAF Classic, QuickSight) and a narrow set of enrollment actions
-  needed to opt your account into the free-tier Compute Optimizer / Cost
-  Optimization Hub services, which need one-time opt-in before they'll
-  return recommendations.
+  Hub, WAF Classic, QuickSight).
+- A narrow set of **write** actions — the only ones this role has —
+  needed solely to opt your account into two free AWS services that
+  require enrollment before they'll return anything:
+  `compute-optimizer:UpdateEnrollmentStatus`,
+  `cost-optimization-hub:UpdateEnrollmentStatus`,
+  `organizations:EnableAWSServiceAccess` (scoped to the Cost Optimization
+  Hub service principal only), and `iam:CreateServiceLinkedRole` /
+  `iam:PutRolePolicy` (scoped to the Compute Optimizer and Cost
+  Optimization Hub service-linked roles only). None of these can create,
+  modify, or delete anything in your actual infrastructure (EC2, S3, RDS,
+  etc.) — see [`main.tf`](./main.tf) for the exact statements.
 - Nothing else. No Lambdas, no S3 buckets, no other roles.
 
 See [`main.tf`](./main.tf) for the exact policy documents — same as the

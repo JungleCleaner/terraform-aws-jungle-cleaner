@@ -1,12 +1,18 @@
 data "aws_caller_identity" "current" {}
 
-# ── Read-only IAM role ───────────────────────────────────────────────────────
+# ── IAM role (read-only, plus narrow opt-in write permissions) ──────────────
 # Mirrors the CloudFormation template Jungle Cleaner's web onboarding flow
 # deploys (infra/templates/jungle-cleaner-role.yaml in the main app repo) —
 # same trust policy, same managed policy, same inline policies. Unlike that
 # template, this module doesn't need a self-deleting Lambda/custom-resource:
 # Terraform state isn't visible in the AWS console the way a permanent
 # CloudFormation stack would be, so there's nothing to "clean up" here.
+#
+# Scope: almost entirely read-only (ReadOnlyAccess + a few extra read
+# actions below). The only write permissions granted are in the
+# "enable_cost_services" policy — narrowly scoped to opting the account
+# into two free AWS recommendation services that require enrollment first.
+# Nothing here can create, modify, or delete actual infrastructure.
 resource "aws_iam_role" "jungle_cleaner" {
   name = var.role_name
 
