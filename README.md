@@ -22,18 +22,25 @@ Get your `external_id` token from [junglecleaner.com](https://junglecleaner.com)
 — either the sign-up flow on the dashboard, or the `connect_aws` tool if
 you're connecting from an AI tool like Cursor or Claude Code via MCP.
 
-The fastest way to get connected — clone this repo and apply it directly, no
-file editing required:
+The fastest way to get connected — clone this repo and apply the `examples/basic`
+config directly, no file editing required:
 
 ```sh
 git clone https://github.com/JungleCleaner/terraform-aws-jungle-cleaner.git
-cd terraform-aws-jungle-cleaner
+cd terraform-aws-jungle-cleaner/examples/basic
 terraform init
 terraform apply -var="external_id=conn_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 ```
 
 (Works the same way with [OpenTofu](https://opentofu.org) — swap `terraform`
 for `tofu`.)
+
+Note: the module's own root (this directory) intentionally has no `provider`
+block — Terraform doesn't allow one there, since it would break the "use as
+a module" pattern below (child modules can't declare their own provider
+configuration; it has to come from whichever root config calls them). The
+`examples/basic` directory is a self-contained root config with its own
+provider block, which is why it's the one you `apply` directly.
 
 If you'd rather manage this as part of your existing Terraform-managed AWS
 account instead of a standalone `apply`, reference it as a module:
