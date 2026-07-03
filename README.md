@@ -47,15 +47,15 @@ account instead of a standalone `apply`, reference it as a module:
 
 ```hcl
 module "jungle_cleaner" {
-  source      = "github.com/JungleCleaner/terraform-aws-jungle-cleaner"
+  source      = "JungleCleaner/jungle-cleaner/aws"
+  version     = "~> 0.1"
   external_id = "conn_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 }
 ```
 
-(Once this module is published to the Terraform Registry, you'll also be
-able to use the shorter registry form,
-`source = "JungleCleaner/jungle-cleaner/aws"` — both point at the same
-code; the `github.com/...` form above works today regardless.)
+(Prefer main-branch-latest without waiting on a tagged release instead?
+`source = "github.com/JungleCleaner/terraform-aws-jungle-cleaner"` points at
+the same code, just without version pinning.)
 
 Once applied, this module makes a best-effort attempt to notify Jungle
 Cleaner automatically so your dashboard shows the account as connected
