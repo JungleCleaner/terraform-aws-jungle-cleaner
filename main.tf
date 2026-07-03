@@ -159,7 +159,9 @@ resource "null_resource" "phone_home" {
   provisioner "local-exec" {
     interpreter = ["/bin/sh", "-c"]
     command     = <<-EOT
-      curl -sS -m 10 -X POST "${var.api_url}" \
+      # -m 25: the API retries assuming this brand-new role for a few seconds
+      # to absorb IAM propagation lag, so give it more than the default 10s.
+      curl -sS -m 25 -X POST "${var.api_url}" \
         -H "Content-Type: application/json" \
         -d "{\"token\":\"${var.external_id}\",\"roleArn\":\"${aws_iam_role.jungle_cleaner.arn}\",\"accountId\":\"${data.aws_caller_identity.current.account_id}\"}" \
         || true
