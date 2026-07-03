@@ -53,9 +53,21 @@ module "jungle_cleaner" {
 }
 ```
 
-(Prefer main-branch-latest without waiting on a tagged release instead?
-`source = "github.com/JungleCleaner/terraform-aws-jungle-cleaner"` points at
-the same code, just without version pinning.)
+**Using [OpenTofu](https://opentofu.org) instead of Terraform?** This module
+isn't (yet) listed on the separate OpenTofu Registry, and `tofu` doesn't fall
+back to `registry.terraform.io` for unqualified sources like this one — use
+the GitHub source form instead, which works identically either way:
+
+```hcl
+module "jungle_cleaner" {
+  source      = "github.com/JungleCleaner/terraform-aws-jungle-cleaner"
+  external_id = "conn_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+}
+```
+
+(This form also works fine with Terraform, just without version pinning —
+use it instead of the registry form above if you'd rather track `main`
+without waiting on a tagged release.)
 
 Once applied, this module makes a best-effort attempt to notify Jungle
 Cleaner automatically so your dashboard shows the account as connected

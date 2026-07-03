@@ -23,9 +23,13 @@ module "jungle_cleaner" {
   # Relative path because this example lives inside the module's own repo —
   # this is also what makes `terraform apply` runnable directly from here
   # right after cloning, no other file edits needed. If you're copying this
-  # snippet into your OWN project instead, use the published registry source:
+  # snippet into your OWN Terraform project instead, use the published
+  # registry source:
   #   source  = "JungleCleaner/jungle-cleaner/aws"
   #   version = "~> 0.1"
+  # OpenTofu doesn't share Terraform's registry (and won't fall back to it) —
+  # use the GitHub form there instead, which works with both tools:
+  #   source = "github.com/JungleCleaner/terraform-aws-jungle-cleaner"
   source = "../../"
 
   external_id = var.external_id
