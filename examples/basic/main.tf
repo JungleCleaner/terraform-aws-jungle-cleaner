@@ -12,7 +12,9 @@ provider "aws" {
 }
 
 module "jungle_cleaner" {
-  source = "JungleCleaner/jungle-cleaner/aws"
+  # Direct GitHub source — works today. Once this module is published to the
+  # Terraform Registry, "JungleCleaner/jungle-cleaner/aws" works too (same code).
+  source = "github.com/JungleCleaner/terraform-aws-jungle-cleaner"
 
   # Get this token from https://junglecleaner.com — either the "connect_aws"
   # MCP tool response, or the "Connect AWS account" button on your dashboard.
